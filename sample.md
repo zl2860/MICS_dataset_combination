@@ -5,8 +5,7 @@ Zongchao Liu
 
 This document is for simply checking MICS datasets.
 
-We firstly download 3 regions’ datasets for a simple demo. The regions
-are:
+The regions we use here are:
 
   - DRCongo
 
@@ -14,7 +13,19 @@ are:
 
   - Zimbabwe
 
-(may add more later)
+  - Ghana
+
+  - Guinea Bissau
+
+  - Lesotho
+
+  - Madagascar
+
+  - Togo
+
+  - Tunisia
+
+  - Zimbabwe
 
 # Helpers
 
@@ -113,3 +124,5 @@ check %>%
 | Togo          |      58 |     467 |     299 |     297 |      80 |     209 |      33 |     423 |      42 |      NA |   18511 |    5030 |    5062 |    8404 |   34988 |    2456 |   12738 |    7657 |    6046 |      NA |
 | Tunisia       |      43 |     462 |     243 |     193 |      72 |     203 |      NA |     363 |      NA |      NA |   14058 |    3474 |    4983 |   11996 |   44276 |    2673 |      NA |   11017 |      NA |      NA |
 | Zimbabwe      |      64 |     466 |     356 |     327 |      88 |     166 |      33 |     443 |      NA |      48 |   22844 |    6223 |    7155 |   12012 |   44472 |    4677 |   10519 |   10703 |      NA |   47835 |
+
+# To be continued…

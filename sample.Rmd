@@ -13,7 +13,7 @@ library(Hmisc)
 
 This document is for simply checking MICS datasets.
 
-We firstly download 3 regions' datasets for a simple demo. The regions are:
+The regions we use here are:
 
 - DRCongo
 
@@ -21,7 +21,19 @@ We firstly download 3 regions' datasets for a simple demo. The regions are:
 
 - Zimbabwe
 
-(may add more later)
+- Ghana
+
+- Guinea Bissau
+
+- Lesotho
+
+- Madagascar
+
+- Togo
+
+- Tunisia
+
+- Zimbabwe
 
 # Helpers
 
@@ -95,3 +107,4 @@ check %>%
 ```
 
 
+# To be continued...
