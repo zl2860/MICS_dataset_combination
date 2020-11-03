@@ -1,0 +1,97 @@
+---
+title: "sample"
+author: "Zongchao Liu"
+date: "11/2/2020"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(Hmisc)
+```
+
+This document is for simply checking MICS datasets.
+
+We firstly download 3 regions' datasets for a simple demo. The regions are:
+
+- DRCongo
+
+- Gambia
+
+- Zimbabwe
+
+(may add more later)
+
+# Helpers
+
+```{r}
+# import a country's data
+countries = list.files('./data/')
+read_data = function(country){
+  path = list.dirs(paste('./data/', country, sep = ''))[2]
+  file_list = list.files(path)
+  list = NULL
+  for (i in 1:length(file_list)) {
+    df = spss.get(paste(path,file_list[i],sep = '/'))
+    list[[i]] = df
+  }
+  names(list) = str_remove(file_list, ".sav")
+  return(list)
+}
+
+# import all country's data
+read_all = function(country_list = countries){
+  list = NULL
+  for (i in 1:length(countries)) {
+    print(countries[i])
+    list[[i]] = read_data(countries[i])
+  }
+  names(list) = country_list
+  return(list)
+}
+
+# check dimensions & names of the dataframes
+check_data = function(list, country_s = NULL, country_list = countries){
+  res = NULL
+  for (country in 1:length(country_list)) {
+    for (df in 1:length(list[country][[1]])) {
+      temp = tibble(country = as.character(names(list)[country]),
+                        df_name = as.character(names(list[country][[1]])[df]),
+                        row = dim(list[country][[1]][[df]])[1],
+                        col = dim(list[country][[1]][[df]])[2])
+      res = rbind(res, temp)
+      #print(temp)
+    }
+  }
+  return(res)
+}
+```
+
+# Import Data
+
+```{r,message=FALSE, warning=FALSE}
+list = read_all()
+# call a specific country's data
+# list$DRCongo
+# call a country's specific dataframe
+# list$DRCongo$bh
+```
+ 
+# check data
+
+## names & dimensions
+
+- `col_xx`: # of columns for the xx dataframe for that country
+
+- `row_xx`: # of observations for the xx dataframe for that country
+
+```{r}
+check = check_data(list = list)
+check %>% 
+  pivot_wider(., names_from = "df_name",
+              values_from = c("col", "row")) %>%
+  knitr::kable()
+```
+
+
