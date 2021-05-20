@@ -9,39 +9,30 @@ output: github_document
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(Hmisc)
+library(xlsx)
 ```
 
 This document is for simply checking MICS datasets.
 
-The regions we use here are:
+We cover 38 countries/regions here
 
-- DRCongo
+# Reorganize folders
 
-- Gambia
+```{r, warning=FALSE, message=FALSE}
+countries = list.files('./data/非洲全部/')
+setwd("./data/非洲全部/")
+file.rename(from = countries, to = sapply(strsplit(countries, " MICS6"), "[[", 1))
+```
 
-- Zimbabwe
 
-- Ghana
-
-- Guinea Bissau
-
-- Lesotho
-
-- Madagascar
-
-- Togo
-
-- Tunisia
-
-- Zimbabwe
 
 # Helpers
 
-```{r}
+```{r} 
 # import a country's data
-countries = list.files('./data/')
+countries = list.files('./data/非洲全部/')
 read_data = function(country){
-  path = list.dirs(paste('./data/', country, sep = ''))[2]
+  path = list.dirs(paste('./data/非洲全部/', country, sep = ''))[2]
   file_list = list.files(path)
   list = NULL
   for (i in 1:length(file_list)) {
@@ -63,6 +54,7 @@ read_all = function(country_list = countries){
   return(list)
 }
 
+
 # check dimensions & names of the dataframes
 check_data = function(list, country_s = NULL, country_list = countries){
   res = NULL
@@ -78,6 +70,18 @@ check_data = function(list, country_s = NULL, country_list = countries){
   }
   return(res)
 }
+
+# Export datasets
+export_data = function(list){
+  for (country in 1:length(list)) {
+    path = str_c('./clean/',names(list)[country],'.xlsx')
+    print(path)
+    for (df in 1:length(list[country][[1]])) {
+      write.xlsx(list[country][[1]][[df]], file = path, sheetName = names(list[country][[1]])[df])
+    }
+  }
+}
+
 ```
 
 # Import Data
@@ -104,7 +108,54 @@ check %>%
   pivot_wider(., names_from = "df_name",
               values_from = c("col", "row")) %>%
   knitr::kable()
+# store temp res
+check_v = check %>% 
+  pivot_wider(., names_from = "df_name",
+              values_from = c("col", "row"))
+check_v[is.na(check_v)] = 0
 ```
 
 
-# To be continued...
+# A simple example to call data
+
+```{r, eval=FALSE}
+# call data for a specific country
+list$Algeria
+# call specific datasets of a given country(bh)
+list$Algeria$bh
+```
+
+# A summary of the imported datasets
+
+```{r}
+missing_dataset_count = colSums(check_v[,1:16] == 0)[-1]
+merged_num = colSums(check_v[,17:31])
+str_remove(names(missing_dataset_count),"col_")
+```
+
+Note:
+
+- 除去Thailand，共有38个国家/地区被纳入。
+
+- 理想条件下，38个地区共有15种类型的数据集可以合并，这15个数据集分别是`r str_remove(names(missing_dataset_count),"col_")`
+
+- 由于并不是每个国家或地区都会全数含有这15个数据集（比如A国只有7个，B国只有4个，C国有15个），我们需要根据以下的基本结果考虑合并15种数据集中的哪些数据集:
+
+1. 38个国家/地区中，15类数据集的缺失数
+
+```{r}
+names(missing_dataset_count) = str_remove(names(missing_dataset_count),"col_")
+missing_dataset_count %>% knitr::kable()
+```
+
+
+2. 每类数据集合并后至多的样本数
+
+```{r}
+names(merged_num) = str_remove(names(merged_num),"row_")
+merged_num %>% knitr::kable()
+```
+
+
+
+综上，可以优先考虑合并 `bh(含有31/38), ch(38/38), fs(38/38), hh(38/38), hl(38/38), wm(38/38), mn(27/38)`。 基本不用考虑合并 `gm(1/38), ab(2/38), lt(1/38), lvalue(1/38), mm(4/38), pn(1/38)`。其他的数据集看具体需求酌情合并。
